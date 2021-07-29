@@ -2,8 +2,6 @@
 <p align="center">A Discord token grabber written in Python.</p>
 This version of the grabber only supports Windows.
 
-``(This script is for educational purposes. I am in no way responsible for any inconvenience.)``
-
 # Features
  - No data caching.
  - Transfers via Discord webhook.
@@ -27,6 +25,11 @@ This version of the grabber only supports Windows.
     - [Discord](https://discord.gg/pUZrFnabvd)
     - [WebSite](http://astraadev.club/)
     - [PayPal.me](https://www.paypal.com/paypalme/fmrhrt)
+
+<br>
+
+# Caution
+This script is for educational purposes. I am in no way responsible for any inconvenience.
 
 <br>
 
