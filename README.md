@@ -3,7 +3,7 @@
 This version of the grabber only supports Windows.
 
 # Features
- - No local caching.
+ - No data caching.
  - Transfers via Discord webhook.
  - Searching for tokens in multiple directories (Discord, Discord PTB, Discord Canary, Chrome, Opera, Brave and Yandex).
  - No external Python modules needed.
