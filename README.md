@@ -23,7 +23,7 @@ This version of the grabber only supports Windows.
     - [Github](https://github.com/AstraaDev)
     - [Twitter](https://twitter.com/AstraaDev)
     - [Discord](https://discord.gg/pUZrFnabvd)
-    - [WebSite](https://astraadev.club/)
+    - [WebSite](http://astraadev.club/)
     - [PayPal.me](https://www.paypal.com/paypalme/fmrhrt)
 
 # Donate
