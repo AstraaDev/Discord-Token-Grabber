@@ -1,6 +1,7 @@
 <h1 align="center">Discord Token Grabber</h1>
 <p align="center">A Discord token grabber written in Python.</p>
 This version of the grabber only supports Windows.
+``(This script is for educational purposes. I am in no way responsible for any inconvenience.)``
 
 # Features
  - No data caching.
