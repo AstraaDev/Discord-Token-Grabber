@@ -18,6 +18,11 @@ This version of the grabber only supports Windows.
  
 <br>
 
+# Example
+![tokengrabber_example.png](https://cdn.discordapp.com/attachments/778283706388709376/880756048208740373/toest_censored.jpg)
+ 
+<br>
+
 # Author
 - **Astraa**
     - [Github](https://github.com/AstraaDev)
