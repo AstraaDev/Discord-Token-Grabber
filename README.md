@@ -39,4 +39,9 @@ This script is for educational purposes. I am in no way responsible for any inco
 <br>
 
 # Donate
-You can donate to my PayPal at https://www.paypal.com/paypalme/fmrhrt <3
+Support this project and [others](https://github.com/AstraaDev) by Astraa via [PayPal](https://www.paypal.com/).
+<br>
+<br>
+<a href="https://www.paypal.me/fmrhrt/">
+  <img alt="Support via PayPal" src="https://cdn.rawgit.com/twolfson/paypal-github-button/1.0.0/dist/button.svg"/>
+</a>
