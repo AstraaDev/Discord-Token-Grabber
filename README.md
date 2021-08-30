@@ -20,6 +20,11 @@
 # Caution
 This script is for educational purposes. I am in no way responsible for any inconvenience.
 
+# Credits
+[<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/github.svg' alt='github' height='25'>](https://github.com/AstraaDev)          [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/twitter.svg' alt='twitter' height='25'>](https://twitter.com/AstraaDev)          [<img src='https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/icloud.svg' alt='website' height='25'>](http://astraadev.club)  
+<br>
+[![Astraa's GitHub stats](https://github-readme-stats.vercel.app/api?username=AstraaDev)](https://github.com/AstraaDev/github-readme-stats)
+
 # Donate
 Support this project and [others](https://github.com/AstraaDev) by Astraa via [PayPal](https://www.paypal.com/).
 <br>
