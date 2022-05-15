@@ -2,7 +2,7 @@
   <img src="https://i.discord.fr/PSS.png">
 </p>
 
-<h1 align="center">[Discord] - ATIO (V1.1.2)</h1>
+<h1 align="center">[Discord] - Token Grabber</h1>
 <p align="center">
   <a href="https://www.python.org">
     <img src="https://img.shields.io/badge/Python-3-informational.svg">
