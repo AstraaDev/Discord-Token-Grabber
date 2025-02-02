@@ -132,15 +132,15 @@ def main():
                 exp_date = None
                 if has_nitro:
                     badges += f":BadgeSubscriber: "
-                    exp_date = datetime.datetime.strptime(res[0]["current_period_end"].split('.')[0], "%Y-%m-%dT%H:%M:%S").strftime('%d/%m/%Y at %H:%M:%S')
+                    exp_date = datetime.datetime.strptime(res[0]["current_period_end"], "%Y-%m-%dT%H:%M:%S%z").strftime('%d/%m/%Y at %H:%M:%S')
 
                 res = requests.get('https://discord.com/api/v9/users/@me/guilds/premium/subscription-slots', headers=getheaders(token)).json()
                 available = 0
                 print_boost = ""
                 boost = False
                 for id in res:
-                    cooldown = datetime.datetime.strptime(id["cooldown_ends_at"], "%Y-%m-%dT%H:%M:%S.%f+00:00")
-                    if cooldown - datetime.datetime.now() < datetime.timedelta(seconds=0):
+                    cooldown = datetime.datetime.strptime(id["cooldown_ends_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
+                    if cooldown - datetime.datetime.now(datetime.timezone.utc) < datetime.timedelta(seconds=0):
                         print_boost += f"ㅤ- Available now\n"
                         available += 1
                     else:
