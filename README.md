@@ -76,8 +76,3 @@ python main.py
 ## Additional Information
 - Need help? Join the [Discord Server](https://discord.gg/PKR7nM9j9U).
 - Contributions are welcome! Open an issue or create a pull request.
-
-Use Control + Shift + m to toggle the tab key moving focus. Alternatively, use esc then tab to move to the next interactive element on the page.
-Aucun fichier choisi
-Attach files by dragging & dropping, selecting or pasting them.
-Editing Discord-Token-Grabber/README.md at main · AstraaDev/Discord-Token-Grabber
