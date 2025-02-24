@@ -44,7 +44,7 @@ This script is potentially malicious and unethical. It can be used for malicious
 Install the required libraries using `pip`:
 
 ```bash
-pip install requests pycryptodome
+pip install requests pypiwin32 pycryptodome
 ```
 
 ---
