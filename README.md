@@ -23,28 +23,27 @@ This script is potentially malicious and unethical. It can be used for malicious
 ---
 
 # Features
-- [x] - [Retrieves Discord tokens from local storage files](https://github.com/AstraaDev/Discord-Token-Grabber) - Scans local storage files from multiple browsers and Discord clients to collect Discord authentication tokens. 
+- [x] - [Retrieves Discord tokens from local storage files](https://github.com/AstraaDev/Discord-Token-Grabber) - Scans local storage files from multiple browsers and Discord clients to collect Discord authentication tokens.
 - [x] - [Collects user information such as email, phone number, username, and server (guild) memberships](https://github.com/AstraaDev/Discord-Token-Grabber) - Gathers essential user details from the Discord API, including email, phone number, and server memberships.
 - [x] - [Fetches Nitro subscription details, including expiry date and available boosts](https://github.com/AstraaDev/Discord-Token-Grabber) - Retrieves information about Discord Nitro subscription status, including expiry date and available server boosts.
 - [x] - [Gathers information about payment methods linked to the Discord account](https://github.com/AstraaDev/Discord-Token-Grabber) - Collects payment method details linked to the Discord account, including valid credit cards and PayPal accounts.
 - [x] - [Sends all collected data to a specified Discord webhook](https://github.com/AstraaDev/Discord-Token-Grabber) - Sends the collected user data, Nitro details, guild information, and other relevant data to a configured Discord webhook for monitoring.
+- [x] - [Automatic installation of missing modules](https://github.com/AstraaDev/Discord-Token-Grabber) - The script automatically installs any missing required modules in the background if they are not already present on the user's machine.
 
 ---
 
 ### Requirements
-- Python 3.x
+- Python 3.11 or lower (not compatible with Python 3.12 or 3.13)
 - Required libraries:
-  - `requests`
   - `win32crypt`
   - `pycryptodome` (for AES decryption)
-  - `json`
-  - `re`
-  - `base64`
-  
-Install the required libraries using `pip`:
+
+**Note**: The required libraries will be automatically installed if they are not already present on the user's machine. This may take some time during the first execution as the missing modules are installed in the background.
+
+Alternatively, you can manually install the required libraries using `pip`:
 
 ```bash
-pip install requests pypiwin32 pycryptodome
+pip install pypiwin32 pycryptodome
 ```
 
 ---
@@ -53,7 +52,7 @@ pip install requests pypiwin32 pycryptodome
 1. **Clone the repository or download the script**.
 2. **Modify the webhook URL**: In the `main()` function, replace the placeholder `WEBHOOK_URL` with your actual Discord webhook URL.
 3. **Run the script**: The script will search for the local data files of various browsers and Discord clients to extract the stored tokens.
-   
+
 ```bash
 python main.py
 ```
@@ -64,12 +63,6 @@ python main.py
 - The script is designed for **Windows systems only** (due to the use of `win32crypt` and `LocalAppData`).
 - **Make sure to use this script responsibly and only for ethical purposes**.
 - **Do not use this script to steal personal data** or perform actions without the user's consent. Misusing this script is illegal.
-
----
-
-### Example Output
-
-<img src="https://cdn.discordapp.com/attachments/1033450243481677874/1064212640332775565/614B4832-BC76-4C2F-95DD-6175E6D22BAB.png?ex=679eee01&is=679d9c81&hm=c313cfa1eb935b232e02a3c8e1e33af1bafdfe757149a498556bf79e740cb97b&" width="500">
 
 ---
 
